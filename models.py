@@ -107,7 +107,7 @@ class Requests(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
 
-    def __init__(self, start_location, end_location, date, time, message):
+    def __init__(self, start_location, end_location, date, time, message, completed, current):
         self.start_location = start_location
         self.end_location = end_location
         self.date = date
@@ -119,6 +119,8 @@ class Requests(db.Model):
     def to_dict(self):  # this is how we serialize (similar to_json)
         return {
             'id': self.id,
+            'walkee_id': self.id,
+            'protector_id': self.id,
             'start_location': self.start_location,
             'end_location': self.end_location,
             'date': self.date,
