@@ -19,7 +19,7 @@ def home():
 def example():
     return {'message': 'Your app is running python'}
 
-@app.get('/protectors/<int:id>') # grabs the protector by their id
+@app.get('/protectors/<int:id>') 
 def show_protector(id):
     protector = Protector.query.get(id)
     if protector:
@@ -27,22 +27,22 @@ def show_protector(id):
     else:
         return {}, 404
 
-# @app.post('/protector_login')
-# def pro_login():
-#     data = request.json
-#     protector = Protector.query.filter_by(email=data['email']).first()
-#     if not protector:
-#         return jsonify({'error': 'no account found'}), 404
-#     else:
-#         given_password = data['password']
-#         if protector.password == given_password:
-#             authenticate the protector
-#             token = create_access_token(identity=protector.id)
-#             return jsonify({'protector': protector.to_dict(), 'token': token})
-#         else:
-#             return jsonify({'error': 'invalid password'}), 422
+@app.post('/protector_login')
+def pro_login():
+    data = request.json
+    protector = Protector.query.filter_by(email=data['email']).first()
+    if not protector:
+        return jsonify({'error': 'no account found'}), 404
+    else:
+        given_password = data['password']
+        if protector.password == given_password:
+            # authenticate the protector
+            # token = create_access_token(identity=protector.id)
+            return jsonify({'protector': protector.to_dict(), 'token': token})
+        else:
+            return jsonify({'error': 'invalid password'}), 422
 
-@app.post('/protectors') #creates a protector
+@app.post('/protectors')
 def create_protector():
     data = request.json
     protector = Protector(data['first_name'], data['last_name'], data['email'])
@@ -51,7 +51,7 @@ def create_protector():
     db.session.commit()
     return jsonify(protector.to_dict()), 201
 
-@app.patch('/protectors/<int:id>') #updates a protectors info
+@app.patch('/protectors/<int:id>') 
 def update_protector(id):
     data = request.json
     protector = Protector.query.get(id)
@@ -61,7 +61,7 @@ def update_protector(id):
     db.session.commit()
     return jsonify(protector.to_dict()), 201
 
-@app.get('/walkees/<int:id>') #grabs a walkee by id 
+@app.get('/walkees/<int:id>') 
 def show_walkee(id):
     walkee = Walkee.query.get(id)
     if walkee:
@@ -69,7 +69,7 @@ def show_walkee(id):
     else:
         return {}, 404
 
-@app.post('/walkees') #creates a new walkee
+@app.post('/walkees') 
 def create_walkee():
     data = request.json
     walkee = Walkee(data['first_name'], data['last_name'], data['email'])
@@ -79,23 +79,23 @@ def create_walkee():
     return jsonify(walkee.to_dict()), 201
 
 
-# @app.post('/walkee_login')
-# def walkee_login():
-#     data = request.json
-#     walkee = Walkee.query.filter_by(email=data['email']).first()
-#     if not walkee:
-#         return jsonify({'error': 'no account found'}), 404
-#     else:
-#         given_password = data['password']
-#         if walkee.password == given_password:
-#             authenticate the walkee
-#             token = create_access_token(identity=walkee.id)
-#             return jsonify({'walkee': walkee.to_dict(), 'token': token})
-#         else:
-#             return jsonify({'error': 'invalid password'}), 422
+@app.post('/walkee_login')
+def walkee_login():
+    data = request.json
+    walkee = Walkee.query.filter_by(email=data['email']).first()
+    if not walkee:
+        return jsonify({'error': 'no account found'}), 404
+    else:
+        given_password = data['password']
+        if walkee.password == given_password:
+            # authenticate the walkee
+            # token = create_access_token(identity=walkee.id)
+            return jsonify({'walkee': walkee.to_dict(), 'token': token})
+        else:
+            return jsonify({'error': 'invalid password'}), 422
 
 
-@app.patch('/walkees/<int:id>') #updates a walkees info
+@app.patch('/walkees/<int:id>') 
 def update_walkee(id):
     data = request.json
     walkee = Walkee.query.get(id)
@@ -106,13 +106,16 @@ def update_walkee(id):
     return jsonify(walkee.to_dict()), 201
 
 
-@app.get('/all_requests') #grabbing all the requests (probs dont need but good to have on our end)
+@app.get('/requests')
 def all_requests():
     requests = Requests.query.all()
-    return jsonify([requests.to_dict() for request in requests])
+    if requests:
+        return jsonify([r.to_dict() for r in requests]), 201
+    else:
+        return {}, 404
    
 
-@app.get('/requests/<int:id>') #this is for a walkee and protectors history
+@app.get('/requests/<int:id>')
 def get_requests(id):
     request = Requests.query.get(id)
     if request:
@@ -120,7 +123,7 @@ def get_requests(id):
     else:
         return {}, 404
 
-@app.patch('/requests/<int:id>') #for when a protector is in progress of a walk or a walk is completed
+@app.patch('/requests/<int:id>') 
 def update_requests(id):
     data = request.json
     reqs = Requests.query.get(id)
@@ -131,7 +134,7 @@ def update_requests(id):
     db.session.commit()
     return jsonify(reqs.to_dict()), 201
 
-@app.post('/create_requests') # creates a request for a walk
+@app.post('/create_requests')
 def create_requests():
     data = request.json
     reqs = Requests(data['start_location'], data['end_location'], data['date'], data['time'], data['message'], data['completed'], data['current'])
